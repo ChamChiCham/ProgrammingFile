@@ -17,15 +17,26 @@ int main() {
     int capitalcount = 0;
     char c;
     char words[20][100] = { 0 };
+    // 새로운 변수 i
     int j = 0;
     while ((c = fgetc(file)) != EOF) {
+        // c에 문자를 읽음
 
+        // words[i]에 이 문자를 넣음
+        // i증가
+
+        // 만약 '\n'을 만나면
+        // i = 0;
+        // j 증가
+        
+        /*
         for (int i = 0; i < 100; i++) {
             words[j][i] = c;
             if (c == '\n') {
                 j++;
             }
         }
+        */
     }
 
 
