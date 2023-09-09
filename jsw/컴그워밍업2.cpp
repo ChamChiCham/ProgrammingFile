@@ -48,8 +48,22 @@ int main() {
             }
         }
     }
-    // 스페이스 단위로 단어를 뗀다
     // 숫자뒤에 스페이스가 올 때까지 숫자를 1카운트한다
+
+    /*
+    * bool 변수 하나 (check)
+    * 
+    * for문 돌려서 문자 확인
+    * if (숫자 만나면 && check가 false면
+    *   check 트루로 바꿈
+    * if (check가 true면
+        if (숫자를 안만나면
+            check를 false로
+        else if (' '나 \n을 만나면
+            카운트
+    *   
+    * 
+    */
 
     printf("word count: %d\n", wordcount - numbercount);
     printf("number count: %d\n", numbercount);
