@@ -18,29 +18,38 @@ int main() {
     char c;
     char words[20][100] = { 0 };
     // 새로운 변수 i
+    int i = 0;
     int j = 0;
     while ((c = fgetc(file)) != EOF) {
-        // c에 문자를 읽음
 
-        // words[i]에 이 문자를 넣음
-        // i증가
+        words[j][i] = c;
+        i++;
 
-        // 만약 '\n'을 만나면
-        // i = 0;
-        // j 증가
-        
-        /*
-        for (int i = 0; i < 100; i++) {
-            words[j][i] = c;
-            if (c == '\n') {
-                j++;
-            }
+        if (c == '\n') {
+            i = 0;
+            j++;
         }
-        */
+    }
+    fclose(file);
+    for (j = 0; j < 20; j++) {
+        for (int i = 0; i < 100; i++) {
+            printf("%c", words[j][i]);
+        }
+        printf("\n");
     }
 
-
-    fclose(file);
+    for (j = 0; j < 20; j++) {
+        for (int i = 0; i < 100; i++) {
+            if (words[j][i] == '\n' || words[j][i] == ' ') {
+                wordcount++;
+            }
+            else if (words[j][i] >= '0' && words[j][i] <= '9') {
+                numbercount++;
+            }
+        }
+    }
+    // 스페이스 단위로 단어를 뗀다
+    // 숫자뒤에 스페이스가 올 때까지 숫자를 1카운트한다
 
     printf("word count: %d\n", wordcount - numbercount);
     printf("number count: %d\n", numbercount);
