@@ -32,11 +32,13 @@ private:
 		bool d;
 		bool e;
 		bool f;
+		bool h;
 
 		SToggle() :
 			d(false),
 			e(false),
-			f(false)
+			f(false),
+			h(false)
 		{}
 	};
 
@@ -45,9 +47,9 @@ private:
 public:
 
 	Solve() :
-		file{} ,
-		lines{} ,
-		is_run(true) ,
+		file{},
+		lines{},
+		is_run(true),
 		toggle{}
 	{}
 
@@ -59,11 +61,11 @@ private:
 	void init()
 	{
 		file.open(FILE_NAME);
-	
+
 		if (!file.is_open()) {
 			assert(false && "File isn't opened.");
 		}
-		
+
 		string temp;
 		while (getline(file, temp)) {
 			lines.push_back(temp);
@@ -108,8 +110,17 @@ private:
 				}
 			}
 
-			cout << output << endl;
+			if (toggle.h) {
+				printSymmetric(output);
+
+			}
+
+			else {
+				cout << output << endl;
+			}
 		}
+
+		toggle.h = false;
 		cout << endl;
 	}
 
@@ -179,28 +190,67 @@ private:
 		}
 	}
 
-	void checkSymmetric()
+	void printSymmetric(string& output)
 	{
-		for (const auto& line : lines) {
-			istringstream iss(line);
-			string word;
-			string r_word;
-			string sym_word;
-			list<string> sym_words;
-			while (iss >> word) {
-				r_word = word;
-				reverse(r_word.begin(), r_word.end());
-				for (int i = 0; i < word.size() / 2; ++i) {
-					if ()
-				}
-				if (!sym_word.empty()) {
 
-				}
+		string r_line = output;
+		string sym_line;
+		reverse(r_line.begin(), r_line.end());
+		for (int i = 0; i < output.size() / 2; ++i) {
+			if (output[i] == r_line[i]) {
+				sym_line.push_back(output[i]);
+			}
+			else {
+				break;
 			}
 		}
+
+		cout << output << " : ";
+
+		if (sym_line.empty()) {
+			cout << "0" << endl;
+		}
+
+		else {
+			cout << sym_line << endl;
+		}
+
 	}
 
-	
+	void calcNumber(const bool is_plus)
+	{
+
+		for (auto& line : lines) {
+			line.push_back(' ');
+			string::iterator str_iter;
+			string str_num;
+			for (string::iterator iter = line.begin(); iter != line.end(); ++iter) {
+				if ('0' <= *iter && *iter <= '9') {
+					if (str_num.empty()) {
+						str_iter = iter;
+					}
+					str_num.push_back(*iter);
+				}
+				else if (!str_num.empty()) {
+					line.erase(str_iter, str_iter + str_num.size());
+
+					if (is_plus)
+						str_num = to_string(stoi(str_num) + 1);
+					else if (str_num != "0")
+						str_num = to_string(stoi(str_num) - 1);
+
+					for (auto& ch : str_num)
+						line.insert(str_iter++, ch);
+
+					str_num.clear();
+				}
+			}
+			line.pop_back();
+		}
+
+	}
+
+
 	void doCommand()
 	{
 		char input;
@@ -239,15 +289,18 @@ private:
 			break;
 
 		case 'h':
-			checkSymmetric();
+			toggle.h = true;
+			printAllLines();
 			break;
 
 		case '+':
-
+			calcNumber(true);
+			printAllLines();
 			break;
 
 		case '-':
-
+			calcNumber(false);
+			printAllLines();
 			break;
 
 		case 'q':
@@ -258,8 +311,8 @@ private:
 			break;
 		}
 	}
-	
-	 
+
+
 public:
 
 	void run()
@@ -272,19 +325,12 @@ public:
 
 		printWordsCount();
 
-		
+
 		while (is_run)
 		{
 			doCommand();
-
 		}
-		
-
-
 	}
-
-
-
 };
 
 
