@@ -16,34 +16,18 @@ int main() {
     int numbercount = 0;
     int capitalcount = 0;
     char c;
-    char words[100] = { 0 };
-
+    char words[20][100] = { 0 };
+    int j = 0;
     while ((c = fgetc(file)) != EOF) {
 
-        // 이렇게 하지 말고
-        // 일단 다 넣어 구분 없이
-        // 스페이스랑 '\n' 인식
         for (int i = 0; i < 100; i++) {
-            words[i] = c;
-        }
-        /*if ((c >= 'A') && (c <= 'Z')) {
-            words[wordcount] = c;
-        }
-        else if ((c >= 'a') && (c <= 'z')) {
-            words[wordcount] = c;
-        }
-        else if ((c >= '0') && (c <= '9')) {
-            words[wordcount] = c;
-        }
-        else {
-            wordcount++;
-        }*/
-    }
-    for (int i = 0; i < 100; i++) {
-        if ((char)words[i] == ' ' || words[i] == '\n') {
-            wordcount++;
+            words[j][i] = c;
+            if (c == '\n') {
+                j++;
+            }
         }
     }
+
 
     fclose(file);
 
