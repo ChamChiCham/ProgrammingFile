@@ -30,24 +30,39 @@ private:
 		{}
 	};
 
+	enum { T_N, T_A, T_S };
+
 	list<SData> list_data;
+	list<SData> sorted_list_data;
 	int			start;
 	int			end;
 
 	bool		is_run;
+	int			toggle;
 
 public:
 
 	CSolve() :
 		list_data{},
+		sorted_list_data{},
 		start(0),
 		end(0),
-		is_run(true)
+		is_run(true),
+		toggle(T_N)
 	{}
 
 	void printList()
 	{
-		for (const auto& data : list_data) {
+		list<SData> print_data;
+
+		if (toggle == T_N) {
+			print_data = list_data;
+		}
+		else {
+			print_data = sorted_list_data;
+		}
+
+		for (const auto& data : print_data) {
 			cout << data.idx << " : " << data.x << " " << data.y << " "
 				<< data.z << " " << endl;
 		}
@@ -173,34 +188,48 @@ public:
 
 	void sortMaxDist()
 	{
-		end = end - start;
-		start = 0;
+		if (toggle == T_A) {
+			toggle = T_N;
+			return;
+		}
+		else {
+			toggle = T_A;
+		}
 
 		list<SData> new_list;
+		list<SData> temp_list = list_data;
 
-		for (int i = 0; i < end; ++i) {
+		for (int i = 0; i < end - start; ++i) {
 			list<SData>::iterator targ_iter = maxDistItor();
 			new_list.push_back(SData(targ_iter->x, targ_iter->y, targ_iter->z, i));
 			list_data.erase(targ_iter);
 		}
 
-		list_data = new_list;
+		sorted_list_data = new_list;
+		list_data = temp_list;
 	}
 
 	void sortMinDist()
 	{
-		end = end - start;
-		start = 0;
+		if (toggle == T_S) {
+			toggle = T_N;
+			return;
+		}
+		else {
+			toggle = T_S;
+		}
 
 		list<SData> new_list;
+		list<SData> temp_list = list_data;
 
-		for (int i = 0; i < end; ++i) {
+		for (int i = 0; i < end - start; ++i) {
 			list<SData>::iterator targ_iter = minDistItor();
 			new_list.push_back(SData(targ_iter->x, targ_iter->y, targ_iter->z, i));
 			list_data.erase(targ_iter);
 		}
 
-		list_data = new_list;
+		sorted_list_data = new_list;
+		list_data = temp_list;
 	}
 
 	void doCommand()
@@ -247,6 +276,15 @@ public:
 			break;
 		default:
 			break;
+		}
+
+		if (input != 'a' && input != 's') {
+			if (toggle == T_A) {
+				sortMaxDist();
+			}
+			else if (toggle == T_S) {
+				sortMinDist();
+			}
 		}
 	}
 
