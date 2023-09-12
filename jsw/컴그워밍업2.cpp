@@ -17,7 +17,8 @@ int main() {
     int capitalcount = 0;
     char c;
     char words[20][100] = { 0 };
-    // 새로운 변수 i
+    bool check;
+    
     int i = 0;
     int j = 0;
     while ((c = fgetc(file)) != EOF) {
@@ -43,8 +44,16 @@ int main() {
             if (words[j][i] == '\n' || words[j][i] == ' ') {
                 wordcount++;
             }
-            else if (words[j][i] >= '0' && words[j][i] <= '9') {
-                numbercount++;
+            else if (words[j][i] >= '0' && words[j][i] <= '9' && check == false) {
+                check = true;
+            }
+            else if (check == true) {
+                if (words[j][i] <= '0' && words[j][i] >= '9') {
+                    check = false;
+                }
+                else if (words[j][i] == '\n' || words[j][i] == ' ') {
+                    numbercount++;
+                }
             }
         }
     }
@@ -64,6 +73,8 @@ int main() {
     *   
     * 
     */
+   
+
 
     printf("word count: %d\n", wordcount - numbercount);
     printf("number count: %d\n", numbercount);
