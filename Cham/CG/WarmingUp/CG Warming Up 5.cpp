@@ -42,9 +42,9 @@ private:
 public:
 
 	CSolve() :
-		board{} ,
-		choose{pair<int, int>(- 1, -1), pair<int, int>(-1, -1)} ,
-		remain(MOVE_LIMIT) ,
+		board{},
+		choose{ pair<int, int>(-1, -1), pair<int, int>(-1, -1) },
+		remain(MOVE_LIMIT),
 		score(0)
 	{
 		initBoard();
@@ -68,7 +68,7 @@ public:
 
 	void printBoard()
 	{
-		cout << "\ta\tb\tc\tb" << endl;
+		cout << "\ta\tb\tc\td" << endl;
 		int count = 1;
 
 		for (int i = 0; i < 4; ++i) {
@@ -97,7 +97,7 @@ public:
 
 	void processPoint()
 	{
-		Sleep(1500);
+		Sleep(1000);
 
 		if (board[choose[0].second][choose[0].first].card
 			== board[choose[1].second][choose[1].first].card) {
@@ -124,13 +124,13 @@ public:
 
 			printBoard();
 
-			Sleep(1500);
+			Sleep(1000);
 
 			board[temp[0].second][temp[0].first].reversed = false;
 			board[temp[1].second][temp[1].first].reversed = false;
 		}
 	}
-	
+
 	const bool inputPoint(int& _x, int& _y)
 	{
 		string input;
@@ -172,7 +172,7 @@ public:
 			return false;
 		}
 
-		if (board[x][y].reversed)
+		if (board[y][x].reversed)
 		{
 			cout << "Already reversed" << endl << endl;
 			return false;
@@ -187,7 +187,7 @@ public:
 	void doPoint()
 	{
 		int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-		
+
 		if (!inputPoint(x1, y1))
 			return;
 

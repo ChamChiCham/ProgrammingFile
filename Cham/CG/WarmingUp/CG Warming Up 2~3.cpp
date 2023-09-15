@@ -244,6 +244,9 @@ private:
 
 					str_num.clear();
 				}
+
+				if (iter == line.end())
+					break;
 			}
 			line.pop_back();
 		}

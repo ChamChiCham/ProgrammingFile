@@ -62,9 +62,9 @@ public:
 			print_data = sorted_list_data;
 		}
 
-		for (const auto& data : print_data) {
-			cout << data.idx << " : " << data.x << " " << data.y << " "
-				<< data.z << " " << endl;
+		for (list<SData>::reverse_iterator iter = print_data.rbegin(); iter != print_data.rend(); ++iter) {
+			cout << iter->idx << " : " << iter->x << " " << iter->y << " "
+				<< iter->z << " " << endl;
 		}
 	}
 
@@ -253,6 +253,9 @@ public:
 		case 'd':
 			popFrontList();
 			printList();
+			break;
+		case 'l':
+			cout << end - start << endl << endl;
 			break;
 		case 'c':
 			clearList();
