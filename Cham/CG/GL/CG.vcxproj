@@ -128,11 +128,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Callback.cpp" />
     <ClCompile Include="FileName.cpp" />
+    <ClCompile Include="WindowMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="func.txt" />
     <Text Include="Task.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Callback.h" />
+    <ClInclude Include="WindowMgr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
