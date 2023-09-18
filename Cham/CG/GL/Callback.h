@@ -9,5 +9,6 @@ namespace cb
 	
 	GLvoid Display();
 	GLvoid Reshape(int w, int h);
-
+	GLvoid Keyboard(unsigned char key, int x, int y);
+	GLvoid Timer(int value);
 }

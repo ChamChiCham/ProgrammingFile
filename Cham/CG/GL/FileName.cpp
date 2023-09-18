@@ -8,6 +8,5 @@ void main(int argc, char** argv)
 {
 	CWindowMgr::getInst()->init(argc, argv);
 	CWindowMgr::getInst()->run();
-
 }
                                                 

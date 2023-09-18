@@ -1,9 +1,7 @@
 #pragma once
-#include <iostream>
 #include <gl/glew.h>              
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
-#include "Callback.h"
 
 class CWindowMgr
 {
@@ -20,8 +18,8 @@ private:
 		WINDOW_POSITION_Y = 100,
 
 		// Window Size
-		WINDOW_SIZE_X = 250,
-		WINDOW_SIZE_Y = 250,
+		WINDOW_SIZE_X = 800,
+		WINDOW_SIZE_Y = 600,
 
 	};
 
@@ -29,7 +27,8 @@ private:
 	const char* WINDOW_TITLE = "Example1";
 
 	// Define member Variable
-
+	float	color[4];
+	bool	is_timer;
 
 	// singleton
 	static CWindowMgr* inst;
@@ -57,8 +56,9 @@ public:
 	// Callback Function
 	void Display();
 
+	void Keyboard(unsigned char key, int x, int y);
 
-
+	void Timer(int value);
 
 	// Run Program
 	void run();
