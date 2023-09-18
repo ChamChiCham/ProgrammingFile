@@ -1,2 +1,0 @@
-C:\MainFolder\ProgrammingStudy\openGL\CG\x64\Debug\CG.exe
-C:\MainFolder\ProgrammingStudy\git\ProgrammingFile\Cham\CG\GL\x64\Debug\CG.exe
