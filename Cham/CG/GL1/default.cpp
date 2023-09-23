@@ -3,7 +3,6 @@
 #include <gl/freeglut_ext.h>
 
 #include <iostream>
-#include <utility>
 #include <random>
 
 // --
@@ -25,7 +24,7 @@ namespace cb
 // random 
 std::random_device rd;
 std::mt19937 gen(rd());
-std::uniform_real_distribution<float> randdist_color(0.f, 1.f);
+std::uniform_real_distribution<float> dist_color(0.f, 1.f);
 
 
 // --
