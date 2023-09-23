@@ -203,9 +203,9 @@ private:
 	// set random color
 	void randomColor(float& _r, float& _g, float& _b)
 	{
-		_r = randdist_color(gen);
-		_g = randdist_color(gen);
-		_b = randdist_color(gen);
+		_r = dist_color(gen);
+		_g = dist_color(gen);
+		_b = dist_color(gen);
 	}
 	void randomColor(SFColor& _color)
 	{
