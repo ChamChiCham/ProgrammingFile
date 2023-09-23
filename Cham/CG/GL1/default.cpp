@@ -97,6 +97,18 @@ private:
 			y = _y;
 			return *this;
 		}
+
+		SIPos& operator+(const int _value)
+		{
+			x += _value;
+			y += _value;
+		}
+
+		SIPos& operator-(const int _value)
+		{
+			x -= _value;
+			y -= _value;
+		}
 	};
 
 	// SFColor: floatÇü color
@@ -130,6 +142,11 @@ private:
 			pos[1](_x2, _y2);
 			return *this;
 		}
+
+		SRect& operator()(const SFPos _fir, const SFPos _sec)
+		{
+			return (*this)(_fir.x, _fir.y, _sec.x, _sec.y);
+		}
 	};
 
 
@@ -160,7 +177,7 @@ private:
 	// Window pos to GL pos
 	const SFPos posWinToGL(const int _x, const int _y)
 	{
-		float ay = (int)abs(WINDOW_SIZE_Y - _y);
+		float ay = static_cast<float>(WINDOW_SIZE_Y - _y);
 		float rx = static_cast<float>((_x - (WINDOW_SIZE_X / 2))) / static_cast<float>((WINDOW_SIZE_X / 2));
 		float ry = static_cast<float>((ay - (WINDOW_SIZE_Y / 2))) / static_cast<float>((WINDOW_SIZE_Y / 2));
 		return SFPos(rx, ry);
@@ -175,7 +192,7 @@ private:
 	{
 		int rx = (_x * static_cast<float>(WINDOW_SIZE_X / 2)) + static_cast<float>(WINDOW_SIZE_X / 2);
 		int ry = (_y * static_cast<float>(WINDOW_SIZE_Y / 2)) + static_cast<float>(WINDOW_SIZE_Y / 2);
-		ry = abs(WINDOW_SIZE_Y - ry);
+		ry = WINDOW_SIZE_Y - ry;
 		return SIPos(rx, ry);
 	}
 	const SIPos posGLToWin(SFPos _fpos)
@@ -201,7 +218,7 @@ public:
 	// -- 
 	// Callback Function
 	// --
-	
+
 	void Display()
 	{
 		glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.0f);
