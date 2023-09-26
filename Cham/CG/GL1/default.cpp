@@ -3,6 +3,7 @@
 #include <gl/freeglut_ext.h>
 
 #include <iostream>
+#include <list>
 #include <random>
 
 // --
@@ -25,6 +26,7 @@ namespace cb
 std::random_device rd;
 std::mt19937 gen(rd());
 std::uniform_real_distribution<float> dist_color(0.f, 1.f);
+std::uniform_real_distribution<float> dist_pos(-1.f, 0.9f);
 
 
 // --
@@ -97,16 +99,14 @@ private:
 			return *this;
 		}
 
-		SIPos& operator+(const int _value)
+		SIPos operator+(const int _value)
 		{
-			x += _value;
-			y += _value;
+			return SIPos(x + _value, y + _value);
 		}
 
 		SIPos& operator-(const int _value)
 		{
-			x -= _value;
-			y -= _value;
+			return SIPos(x - _value, y - _value);
 		}
 	};
 
@@ -152,11 +152,24 @@ private:
 	// Define member Variable
 	SFColor bg_color;
 
+	std::list<SRect> rects;
+	
 public:
 
 	CWindowMgr() :
-		bg_color{ 0.f, 0.f, 0.f }
-	{}
+		bg_color{ 0.f, 0.f, 0.f },
+		rects[5]
+	{
+		for (int i = 0; i < 5; ++i) {
+			SRect rect;
+			randomColor(rect.color);
+			rect.pos[0].x = dist_pos(gen);
+			rect.pos[0].y = dist_pos(gen);
+			rect.pos[1].x = dist_pos(gen);
+			rect.pos[1].y = dist_pos(gen);
+			rects.push_back(rect);
+		}
+	}
 
 	~CWindowMgr() {}
 	CWindowMgr(const CWindowMgr& other) = delete;
@@ -223,11 +236,19 @@ public:
 		glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		for (const auto& rect : rects) {
+			glColor3f(rect.color.r, rect.color.g, rect.color.b);
+			glRectf(rect.pos[0].x, rect.pos[0].y, rect.pos[1].x, rect.pos[1].y);
+		}
+
 		glutSwapBuffers();
 	}
 
 	void Mouse(const int _button, const int _state, const int _x, const int _y)
 	{
+		for (std::list<SRect>::iterator iter = rects.begin(); iter != rects.end(); ++iter) {
+
+		}
 	}
 
 	// init GL library
