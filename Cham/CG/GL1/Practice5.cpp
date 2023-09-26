@@ -263,14 +263,15 @@ public:
 	{
 		if (!is_rect_erase)
 			return;
-		
+
 
 		for (std::list<SRect>::iterator iter = rects.begin(); iter != rects.end(); ++iter) {
 			if ((rect_erase.pos[0].x <= iter->pos[0].x && iter->pos[0].x <= rect_erase.pos[1].x ||
-				  rect_erase.pos[0].x <= iter->pos[1].x && iter->pos[1].x <= rect_erase.pos[1].x) &&
+				rect_erase.pos[0].x <= iter->pos[1].x && iter->pos[1].x <= rect_erase.pos[1].x) &&
 				(rect_erase.pos[1].y <= iter->pos[1].y && iter->pos[1].y <= rect_erase.pos[0].y ||
-				  rect_erase.pos[1].y <= iter->pos[0].y && iter->pos[0].y <= rect_erase.pos[0].y)) {
+					rect_erase.pos[1].y <= iter->pos[0].y && iter->pos[0].y <= rect_erase.pos[0].y)) {
 				rect_diff += 5;
+				rect_erase.color = iter->color;
 				rects.erase(iter);
 				break;
 			}
@@ -301,20 +302,16 @@ public:
 
 	void Mouse(const int _button, const int _state, const int _x, const int _y)
 	{
-		if (GLUT_RIGHT_BUTTON == _button && GLUT_DOWN == _state && !is_rect_erase) {
+		
+		if (GLUT_LEFT_BUTTON == _button && GLUT_DOWN == _state) {
 			createRect(_x, _y);
 			is_rect_erase = true;
-		}
-
-		if (GLUT_LEFT_BUTTON == _button && GLUT_DOWN == _state) {
-			SIPos fir = posGLToWin(rect_erase.pos[0]);
-			SIPos sec = posGLToWin(rect_erase.pos[1]);
-			if (fir.x <= _x && _x <= sec.x && fir.y <= _y && _y <= sec.y) {
-				rect_select = true;
-			}
+			rect_select = true;
 		}
 
 		if (GLUT_LEFT_BUTTON == _button && GLUT_UP == _state) {
+			rect_diff = 0;
+			is_rect_erase = false;
 			rect_select = false;
 		}
 
@@ -327,6 +324,8 @@ public:
 			return;
 
 		rect_erase(posWinToGL(x - 25 - rect_diff, y - 25 - rect_diff), posWinToGL(x + 25 + rect_diff, y + 25 + rect_diff));
+
+
 	}
 
 	void Keyboard(unsigned char key)
