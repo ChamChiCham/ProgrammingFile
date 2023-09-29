@@ -104,7 +104,7 @@ private:
 			return SIPos(x + _value, y + _value);
 		}
 
-		SIPos& operator-(const int _value)
+		SIPos operator-(const int _value)
 		{
 			return SIPos(x - _value, y - _value);
 		}
