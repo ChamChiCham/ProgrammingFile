@@ -1,12 +1,6 @@
 #include "Utility.h"
 #include <random>
 
-
-std::random_device rd;
-std::mt19937 gen(rd());
-std::uniform_real_distribution<float> dist_color(0.f, 1.f);
-std::uniform_real_distribution<float> dist_pos(-1.f, 0.9f);
-
 const SFPos posWinToGL(const int _x, const int _y)
 {
 	float ay = static_cast<float>(WINDOW_SIZE_Y - _y);
@@ -50,6 +44,11 @@ const SFColor colorWinToGL(const int _color)
 // set random color
 void randomColor(float& _r, float& _g, float& _b)
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dist_color(0.f, 1.f);
+	std::uniform_real_distribution<float> dist_pos(-1.f, 0.9f);
+
 	_r = dist_color(gen);
 	_g = dist_color(gen);
 	_b = dist_color(gen);

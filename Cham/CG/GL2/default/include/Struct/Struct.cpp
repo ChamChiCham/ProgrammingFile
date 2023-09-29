@@ -81,3 +81,15 @@ SBuffer::SBuffer() : size{ 0 }, VAO{ 0 }, VBO{ 0, 0 }, EBO{ 0 }, VBO0_data{}, VB
 SBuffer::~SBuffer()
 {
 }
+
+SPoligon& SPoligon::operator()(const SVertex _targ)
+{
+	vertices.push_back(_targ);
+	return *this;
+}
+
+SPoligon& SPoligon::operator()(const int _x, const int _y, const int _color)
+{
+	vertices.push_back(SVertex(_x, _y, _color));
+	return *this;
+}

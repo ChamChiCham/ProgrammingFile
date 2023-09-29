@@ -5,13 +5,16 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <random>
 
 #include "Struct.h"
 #include "Define.h"
 #include "CShaderManager.h"
 #include "Utility.h"
 
-
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_int_distribution<int> rand_color(0, 0xFFFFFF);
 
 namespace cb
 {
@@ -19,8 +22,8 @@ namespace cb
 	GLvoid Reshape(int w, int h);
 	GLvoid GameLoop(int value);
 	GLvoid Mouse(int button, int state, int x, int y);
+	GLvoid Keyboard(unsigned char key, int x, int y);
 }
-
 
 
 class CWindowMgr
@@ -36,8 +39,10 @@ private:
 
 	// buffer vari
 	std::vector<SBuffer> bufs_pol;
-	
 	std::list<int> bufs_change;
+	
+
+
 
 public:
 
@@ -47,15 +52,7 @@ public:
 		poligons{},
 		bufs_pol{},
 		bufs_change{}
-	{
-		SPoligon poligon;
-		poligon.vertices.push_back(SVertex(400, 400, 0xFF00FF));
-		poligon.vertices.push_back(SVertex(200, 400, 0xFF00FF));
-		poligon.vertices.push_back(SVertex(400, 200, 0xFF00FF));
-		poligon.vertices.push_back(SVertex(200, 200, 0xFF00FF));
-		poligons.push_back(poligon);
-		bufs_change.push_back(0);
-	}
+	{}
 
 	~CWindowMgr() {}
 	CWindowMgr(const CWindowMgr& other) = delete;
@@ -70,6 +67,9 @@ public:
 
 	void updatePoligon(int _idx)
 	{
+		if (_idx > bufs_pol.size())
+			return;
+
 		SBuffer buf;
 
 		buf.size = 0;
@@ -122,8 +122,10 @@ public:
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.EBO);
 
-		
-		bufs_pol.push_back(buf);
+		if (bufs_pol.size() == _idx)
+			bufs_pol.push_back(buf);
+		else
+			bufs_pol[_idx] = buf;
 	}
 
 	void updateBuffer()
@@ -138,6 +140,7 @@ public:
 	void drawPoligon(int _idx)
 	{
 		glBindVertexArray(bufs_pol[_idx].VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufs_pol[_idx].EBO);
 		glDrawElements(GL_TRIANGLES, (bufs_pol[_idx].size - 2) * 3, GL_UNSIGNED_INT, 0);
 	}
 
@@ -158,7 +161,11 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(ShaderMgr.program);
-		drawPoligon(0);
+		
+
+		for (int i = 0; i < poligons.size(); ++i) {
+			drawPoligon(i);
+		}
 
 		glutSwapBuffers();
 	}
@@ -166,6 +173,36 @@ public:
 	void Mouse(const int _button, const int _state, const int _x, const int _y)
 	{
 		
+	}
+
+	void Keyboard(const unsigned char _key, const int _x, const int _y)
+	{
+		
+	}
+
+	// --
+	// utility func
+	// -- 
+
+	void makeRect(const int _x1, const int _y1, const int _x2, const int _y2, const int _color)
+	{
+		SPoligon poli;
+		poli(_x1, _y1, _color);
+		poli(_x1, _y2, _color);
+		poli(_x2, _y1, _color);
+		poli(_x2, _y2, _color);
+		poligons.push_back(poli);
+		bufs_change.push_back(poligons.size() - 1);
+	}
+
+	void makeTriangle(const int _x1, const int _y1, const int _x2, const int _y2, const int _x3, const int _y3, const int _color)
+	{
+		SPoligon poli;
+		poli(_x1, _y1, _color);
+		poli(_x2, _y2, _color);
+		poli(_x3, _y3, _color);
+		poligons.push_back(poli);
+		bufs_change.push_back(poligons.size() - 1);
 	}
 
 
@@ -197,6 +234,7 @@ public:
 		glutDisplayFunc(cb::Display);
 		glutReshapeFunc(cb::Reshape);
 		glutMouseFunc(cb::Mouse);
+		glutKeyboardFunc(cb::Keyboard);
 		glutTimerFunc(10, cb::GameLoop, 1);
 
 		// set position
@@ -228,6 +266,11 @@ GLvoid cb::Reshape(int w, int h)
 GLvoid cb::Mouse(int button, int state, int x, int y)
 {
 	Window.Mouse(button, state, x, y);
+}
+
+GLvoid cb::Keyboard(unsigned char key, int x, int y)
+{
+	Window.Keyboard(key, x, y);
 }
 
 // (CALLBACK) Main Loop

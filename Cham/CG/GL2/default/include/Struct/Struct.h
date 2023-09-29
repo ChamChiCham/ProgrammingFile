@@ -73,6 +73,9 @@ struct SPoligon
 {
 	std::vector<SVertex> vertices;
 
+	SPoligon& operator()(const SVertex _targ);
+	SPoligon& operator()(const int _x, const int _y, const int _color);
+
 };
 
 struct STri
