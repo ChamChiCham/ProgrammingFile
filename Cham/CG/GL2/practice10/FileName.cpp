@@ -197,7 +197,7 @@ public:
 		SIPos prev = _pos;
 		double rad = 0.;
 		double dis = 0.;
-		int size = 3;
+		int size = 4;
 		int color = rand_color(gen);
 
 		for (int i = 0; i < 129; ++i) {
