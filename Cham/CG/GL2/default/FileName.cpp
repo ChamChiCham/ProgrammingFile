@@ -32,7 +32,7 @@ private:
 
 	// Define member Variable
 	SFColor bg_color;
-	CShaderManager ShaderMgr;
+	CShaderMgr ShaderMgr;
 
 	// poligons
 	std::vector<SPoligon> poligons;
