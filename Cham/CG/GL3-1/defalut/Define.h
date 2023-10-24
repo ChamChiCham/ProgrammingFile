@@ -18,14 +18,17 @@ enum
 	WINDOW_POSITION_Y = 100,
 
 	// Window Size
-	WINDOW_SIZE_X = 800,
-	WINDOW_SIZE_Y = 600,
+	WINDOW_SIZE_X = 1280,
+	WINDOW_SIZE_Y = 960,
 
 	// shape name
 	SHAPE_DICE = 0,
-	SHAPE_LINE = 1,
-	SHAPE_SQUARE_PRAMID = 2,
-	SHAPE_TETRA = 3,
+	SHAPE_LINE,
+	SHAPE_SQUARE_PRAMID,
+	SHAPE_TETRA,
+	SHAPE_SQUARE,
+	SHAPE_TRIANGLE,
+	SHAPE_SPHERE, // 중심: 0, 0.5, 0 / 지름: 5.09116 .transform(0, 0.f, -0.05f, 0.f); .scale(1, 0.392837782.f,,);
 
 	MAT_S = 0,
 	MAT_R = 1,
