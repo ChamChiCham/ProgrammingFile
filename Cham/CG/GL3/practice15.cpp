@@ -44,7 +44,7 @@ public:
 
 	SShapeData* data;
 	std::vector<glm::vec3> colors;
-
+	
 
 public:
 
@@ -104,7 +104,7 @@ public:
 		data = &_data;
 	}
 
-	void draw(const unsigned int _program) const
+	void draw(const unsigned int _program, const unsigned int _mode) const
 	{
 		glm::mat4 MR = mat[MAT_T] * mat[MAT_R] * mat[MAT_S];
 
@@ -115,7 +115,7 @@ public:
 		glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(MR));
 		glBindVertexArray(buffer.VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.EBO);
-		glDrawElements(GL_TRIANGLES, data->indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(_mode, data->indices.size(), GL_UNSIGNED_INT, 0);
 	}
 
 	void scale(const glm::vec3& _vec)
@@ -131,6 +131,12 @@ public:
 	void translate(const glm::vec3& _vec)
 	{
 		mat[MAT_T] = glm::translate(mat[MAT_T], _vec);
+	}
+
+	void clearMatrix()
+	{
+		for (auto& matrix : mat)
+			matrix = glm::mat4(1.0f);
 	}
 };
 
@@ -161,6 +167,10 @@ private:
 
 	std::vector<CShape> shapes;
 
+	int rotate_x = 0;
+	int rotate_y = 0;
+	int solid = 1;
+	int depth = 1;
 
 
 public:
@@ -208,7 +218,7 @@ public:
 			1.f,	1.f,	1.f,
 			-1.f,	1.f,	1.f,
 			1.f,	-1.f,	1.f,
-			-1.f,	-1.f,	1.f,
+			- 1.f,	-1.f,	1.f,
 			1.f,	1.f,	-1.f,
 			-1.f,	1.f,	-1.f,
 			1.f,	-1.f,	-1.f,
@@ -317,8 +327,9 @@ public:
 
 
 		shapes.push_back(CShape());
-		shapes[2].setData(shape_data[SHAPE_TETRA]);
+		shapes[2].setData(shape_data[SHAPE_SQUARE_PRAMID]);
 
+		shapes[2].colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
 		for (int i = 0; i < 2; ++i)
 			shapes[2].colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
 		for (int i = 0; i < 2; ++i)
@@ -352,9 +363,17 @@ public:
 		glClearColor(bg_color.r, bg_color.g, bg_color.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glEnable(GL_DEPTH_TEST);
-		for (auto& shape : shapes)
-			shape.draw(ShaderMgr.program);
+		if (depth)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+
+		for (auto& shape : shapes) {
+			if (solid)
+				shape.draw(ShaderMgr.program, GL_TRIANGLES);
+			else
+				shape.draw(ShaderMgr.program, GL_LINE_LOOP);
+		}
 
 		glutSwapBuffers();
 	}
@@ -366,7 +385,105 @@ public:
 
 	void Keyboard(const unsigned char _key, const int _x, const int _y)
 	{
+		switch (_key)
+		{
+		case 'c':
+			shapes[2].setData(shape_data[SHAPE_DICE]);
 
+			shapes[2].colors.clear();
+
+			for (int i = 0; i < 2; ++i)
+				shapes[2].colors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			for (int i = 0; i < 2; ++i)
+				shapes[2].colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+			for (int i = 0; i < 2; ++i)
+				shapes[2].colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+			for (int i = 0; i < 2; ++i)
+				shapes[2].colors.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
+
+			shapes[2].updateBuffer();
+			break;
+		case 'p':
+			shapes[2].setData(shape_data[SHAPE_SQUARE_PRAMID]);
+
+			shapes[2].colors.clear();
+
+			shapes[2].colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+			for (int i = 0; i < 2; ++i)
+				shapes[2].colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+			for (int i = 0; i < 2; ++i)
+				shapes[2].colors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+
+			shapes[2].updateBuffer();
+			break;
+		case 'h':
+			if (depth)
+				depth = false;
+			else
+				depth = true;
+			break;
+
+		case 'i': case 'I':
+			if (solid)
+				solid = false;
+			else
+				solid = true;
+			break;
+
+		case 'x':
+			if (rotate_x == 1)
+				rotate_x = 0;
+			else 
+				rotate_x = 1;
+			break;
+
+		case 'X':
+			if (rotate_x == -1)
+				rotate_x = 0;
+			else
+				rotate_x = -1;
+			break;
+
+		case 'y':
+			if (rotate_y == 1)
+				rotate_y = 0;
+			else
+				rotate_y = 1;
+			break;
+
+		case 'Y':
+			if (rotate_y == -1)
+				rotate_y = 0;
+			else
+				rotate_y = -1;
+			break;
+
+		case 'd':
+			shapes[2].translate(glm::vec3(0.03f, 0.f, 0.f));
+			break;
+		case 'a':
+			shapes[2].translate(glm::vec3(-0.03f, 0.f, 0.f));
+			break;
+		case 'w':
+			shapes[2].translate(glm::vec3(0.0f, 0.03f, 0.f));
+			break;
+		case 's':
+			shapes[2].translate(glm::vec3(0.f, -0.03f, 0.f));
+			break;
+
+		case 'r':
+			shapes[2].clearMatrix();
+			shapes[2].scale(glm::vec3(0.5f, 0.5f, 0.5f));
+			shapes[2].rotate(-30.f, glm::vec3(1.0, 0.0, 0.0));
+			shapes[2].rotate(30.f, glm::vec3(0.0, 1.0, 0.0));
+			rotate_x = false;
+			rotate_y = false;
+			break;
+
+
+		default:
+			break;
+		}
 	}
 
 	void Motion(const int _x, const int _y)
@@ -380,7 +497,11 @@ public:
 
 	void updateState()
 	{
+		if (rotate_x != 0)
+			shapes[2].rotate(1. * rotate_x, glm::vec3(1.f, 0.f, 0.f));
 
+		if (rotate_y != 0)
+			shapes[2].rotate(1. * rotate_y, glm::vec3(0.f, 1.f, 0.f));
 	}
 
 
