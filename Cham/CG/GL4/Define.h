@@ -3,9 +3,9 @@
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
 
-	// --
-	// Define variable
-	// --
+// --
+// Define variable
+// --
 
 enum
 {
@@ -24,11 +24,10 @@ enum
 	// shape name
 	SHAPE_DICE = 0,
 	SHAPE_SQUARE_PRAMID,
-	SHAPE_TETRA,
 	SHAPE_SQUARE,
 	SHAPE_TRIANGLE,
 	SHAPE_SPHERE, // 중심: 0, 0.5, 0 / 지름: 5.09116 .transform(0, 0.f, -0.05f, 0.f); .scale(1, 0.392837782.f,,);
-
+	SHAPE_CYLINDER
 };
 
 

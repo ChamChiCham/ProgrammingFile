@@ -10,6 +10,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <random>
 
 #include "CShaderMgr.h"
 #include "Define.h"
@@ -195,6 +196,13 @@ public:
 	{
 		setColor(glm::vec3(_r, _g, _b));
 	}
+
+	void clearMatrix(const int _idx)
+	{
+		if (mats.size() <= _idx)
+			return;
+		mats[_idx] = glm::mat4(1.f);
+	}
 };
 
 class CLine {
@@ -359,7 +367,25 @@ private:
 
 	std::vector<CShape> shapes;
 	std::vector<CLine> lines;
+	// 전역 변수 적는 곳
+	int tog_c;
+	int tog_o;
+	float ball_x[5];
+	float ball_y[5];
+	int ball_way[5];
 
+	int open_time;
+
+	int LDown;
+	float mouse_xPos, mouse_yPos;
+	float mouse_start_xPos, mouse_start_yPos;
+	float mouse_end_xPos, mouse_end_yPos;
+
+	float d = 0.f;
+	float s = 0.f;
+
+	int rotation_rad;
+	int box_time;
 public:
 
 	CWindowMgr()
@@ -406,9 +432,68 @@ public:
 		// --
 
 		shapes.push_back(CShape());
-		shapes[0].setData(SHAPE_DICE);
-		shapes[0].setColor(1.f, 0.f, 0.f);
-		shapes[0].translate(0, -1.f, 0.f, 0.f);
+		shapes[0].setData(SHAPE_SQUARE);
+		shapes[0].setColor(0.5f, 0.0f, 0.0f);
+		shapes[0].scale(0, 2.0f, 2.0f, 2.0f);
+		shapes[0].translate(1, 0.0f, 2.0f, 0.0f);
+
+		shapes.push_back(CShape());
+		shapes[1].setData(SHAPE_SQUARE);
+		shapes[1].setColor(0.0f, 0.5f, 0.0f);
+		shapes[1].scale(0, 2.0f, 2.0f, 2.0f);
+		shapes[1].rotate(1, 180.f, 1.0, 0.0, 0.0);
+		shapes[1].translate(2, 0.0f, -2.0f, 0.0f);
+
+		shapes.push_back(CShape());
+		shapes[2].setData(SHAPE_SQUARE);
+		shapes[2].setColor(0.5f, 0.0f, 0.5f);
+		shapes[2].scale(0, 2.0f, 2.0f, 2.0f);
+		shapes[2].rotate(1, -90.f, 1.0, 0.0, 0.0);
+		shapes[2].translate(2, 0.0f, 0.0f, -2.0f);
+
+		shapes.push_back(CShape());
+		shapes[3].setData(SHAPE_SQUARE);
+		shapes[3].setColor(0.5f, 0.5f, 0.0f);
+		shapes[3].scale(0, 2.0f, 2.0f, 2.0f);
+		shapes[3].rotate(1, 180.f, 1.0, 0.0, 0.0);
+		shapes[3].rotate(2, 90.f, 0.0, 0.0, 1.0);
+		shapes[3].translate(3, 2.0f, 0.0f, 0.0f);
+
+		shapes.push_back(CShape());
+		shapes[4].setData(SHAPE_SQUARE);
+		shapes[4].setColor(0.0f, 0.5f, 0.5f);
+		shapes[4].scale(0, 2.0f, 2.0f, 2.0f);
+		shapes[4].rotate(1, 90.f, 0.0, 0.0, 1.0);
+		shapes[4].translate(2, -2.0f, 0.0f, 0.0f);
+
+		for (int i = 5; i < 10; i++) {
+			shapes.push_back(CShape());
+			shapes[i].setData(SHAPE_SPHERE);
+			shapes[i].setColor(0.0f, 0.0f, 1.0f);
+			shapes[i].translate(0, 0.f, -0.05f, 0.f);
+			shapes[i].scale(1, 0.092837782f, 0.092837782f, 0.092837782f);
+			ball_x[i - 5] = GenerateRandomPos();
+			ball_y[i - 5] = GenerateRandomPos();
+			shapes[i].translate(2, ball_x[i - 5], ball_y[i - 5], 0.f);
+		}
+
+		shapes.push_back(CShape());
+		shapes[10].setData(SHAPE_DICE);
+		shapes[10].setColor(1.0f, 0.0f, 0.0f);
+		shapes[10].scale(0, 0.2f, 0.2f, 0.2f);
+		shapes[10].translate(1, 0.0f, -1.8f, 0.6f);
+
+		shapes.push_back(CShape());
+		shapes[11].setData(SHAPE_DICE);
+		shapes[11].setColor(1.0f, 0.0f, 0.0f);
+		shapes[11].scale(0, 0.3f, 0.3f, 0.3f);
+		shapes[11].translate(1, 0.0f, -1.7f, 0.0f);
+
+		shapes.push_back(CShape());
+		shapes[12].setData(SHAPE_DICE);
+		shapes[12].setColor(1.0f, 0.0f, 0.0f);
+		shapes[12].scale(0, 0.3f, 0.4f, 0.4f);
+		shapes[12].translate(1, 0.0f, -1.6f, -0.8f);
 
 		for (auto& shape : shapes)
 			shape.updateBuffer();
@@ -421,8 +506,8 @@ public:
 		// set view
 		// --
 
-		view.eye = glm::vec3(5.0f, 5.0f, 5.0f);
-		view.at = glm::vec3(0.f, 0.f, 0.f);
+		view.eye = glm::vec3(0.0f, 0.5f, 8.0f);
+		view.at = glm::vec3(0.f, 0.f, 0.0f);
 		view.up = glm::vec3(0.f, 1.f, 0.f);
 		proj = glm::perspective(glm::radians(60.f), 1.0f, 0.1f, 20.f);
 
@@ -430,16 +515,35 @@ public:
 		// --
 		// explain
 		// --
-
-
-	}
-
-	void updateBuffer()
-	{
+		ReadMe();
 
 	}
 
+	// 함수 만드는 곳
+	void ReadMe() {
+		std::cout << "   8/5: z축으로 양/음방향 이동" << std::endl;
+		std::cout << "   4/6: x축으로 양/음방향 이동" << std::endl;
+		std::cout << "   7/9: y축에 대하여 시계/반시계 회전" << std::endl;
+		std::cout << "     b: 볼 생성/바닥 닫기" << std::endl;
+		std::cout << "     o: 바닥 열기" << std::endl;
+		std::cout << "     c: 컬링" << std::endl;
+		std::cout << "마우스: z축에 대하여 왼쪽/오른쪽 회전" << std::endl;
+	}
+	float GenerateRandomPos() {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(-1.7, 1.7);
+		return dis(gen);
+	}
+	void windowsToOpenGLCoords(int x, int y, int windowWidth, int windowHeight, float& mouse_xPos, float& mouse_yPos) {
+		// 윈도우 좌표계의 중심을 계산
+		int windowCenterX = windowWidth / 2;
+		int windowCenterY = windowHeight / 2;
 
+		// OpenGL 좌표계로 변환하고 스케일링 적용
+		mouse_xPos = static_cast<float>(x - windowCenterX) / windowCenterX;
+		mouse_yPos = -static_cast<float>(y - windowCenterY) / windowCenterY; // y축 방향을 반대로
+	}
 
 	// --
 	// define cb func
@@ -452,29 +556,135 @@ public:
 
 
 		glEnable(GL_DEPTH_TEST);
+		if (tog_c == 1) {
+			glFrontFace(GL_CW);
+			glEnable(GL_CULL_FACE);
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+		}
 
 		int mode = GL_TRIANGLES;
 
 		for (const auto& shape : shapes)
 			shape.draw(ShaderMgr.program, view, proj, mode);
-			
+
 
 		glutSwapBuffers();
 	}
 
 	void Mouse(const int _button, const int _state, const int _x, const int _y)
 	{
+		windowsToOpenGLCoords(_x, _y, WINDOW_SIZE_X, WINDOW_SIZE_Y, mouse_xPos, mouse_yPos);
+		if (_button == GLUT_LEFT_BUTTON && _state == GLUT_DOWN) {
+			LDown = 1;
+			mouse_start_xPos = mouse_xPos;
+			mouse_start_yPos = mouse_yPos;
+		}
+		else if (_button == GLUT_LEFT_BUTTON && _state == GLUT_UP) {
+			LDown = 0;
+		}
 
 	}
 
 	void Keyboard(const unsigned char _key, const int _x, const int _y)
 	{
-		
+		switch (_key)
+		{
+		case 'c':
+			tog_c = !tog_c;
+			break;
+		case 'o':
+			tog_o = 1;
+			break;
+		case 'b':
+			view.up = glm::vec3(0.0f, 1.0f, 0.0f);
+			shapes[1].clearMatrix(3);
+			tog_o = 0;
+			open_time = 0;
+			rotation_rad = 0;
+			box_time = 0;
+			for (int i = 5; i < 10; ++i) {
+				shapes[i].clearMatrix(3);
+				shapes[i].clearMatrix(2);
+				ball_way[i - 5] = 0;
+				ball_x[i - 5] = GenerateRandomPos();
+				ball_y[i - 5] = GenerateRandomPos();
+				shapes[i].translate(2, ball_x[i - 5], ball_y[i - 5], 0.f);
+			}
+			for (int i = 10; i < 13; i++) {
+				shapes[i].clearMatrix(2);
+			}
+
+			break;
+		case '1':
+			d = sqrtf(powf(view.eye.y - view.at.y, 2) + powf(view.eye.z - view.at.z, 2));
+			s = atan2f(view.eye.z - view.at.z, view.eye.y - view.at.y);
+			view.eye.y = view.at.y + d * cos(s + glm::radians(2.f));
+			view.eye.z = view.at.z + d * sin(s + glm::radians(2.f));
+			break;
+		case '3':
+			d = sqrtf(powf(view.eye.y - view.at.y, 2) + powf(view.eye.z - view.at.z, 2));
+			s = atan2f(view.eye.z - view.at.z, view.eye.y - view.at.y);
+			view.eye.y = view.at.y + d * cos(s + glm::radians(-2.f));
+			view.eye.z = view.at.z + d * sin(s + glm::radians(-2.f));
+			break;
+		case '4':
+			view.eye.x -= 0.1;
+			view.at.x -= 0.1;
+			break;
+		case '6':
+			view.eye.x += 0.1;
+			view.at.x += 0.1;
+			break;
+		case '8':
+			view.eye.z -= 0.1;
+			view.at.z -= 0.1;
+			break;
+		case '5':
+			view.eye.z += 0.1;
+			view.at.z += 0.1;
+			break;
+		case '7':
+			d = sqrtf(powf(view.eye.x - view.at.x, 2) + powf(view.eye.z - view.at.z, 2));
+			s = atan2f(view.eye.z - view.at.z, view.eye.x - view.at.x);
+			view.eye.x = view.at.x + d * cos(s + glm::radians(2.f));
+			view.eye.z = view.at.z + d * sin(s + glm::radians(2.f));
+			break;
+		case '9':
+			d = sqrtf(powf(view.eye.x - view.at.x, 2) + powf(view.eye.z - view.at.z, 2));
+			s = atan2f(view.eye.z - view.at.z, view.eye.x - view.at.x);
+			view.eye.x = view.at.x + d * cos(s + glm::radians(-2.f));
+			view.eye.z = view.at.z + d * sin(s + glm::radians(-2.f));
+		default:
+			break;
+		}
 	}
 
 	void Motion(const int _x, const int _y)
 	{
+		windowsToOpenGLCoords(_x, _y, WINDOW_SIZE_X, WINDOW_SIZE_Y, mouse_xPos, mouse_yPos);
+		if (LDown) {
+			mouse_end_xPos = mouse_xPos;
+			mouse_end_yPos = mouse_yPos;
+			if (mouse_end_xPos - mouse_start_xPos > 0) {
+				if (rotation_rad < 60) {
+					glm::mat4 M_Rotation = glm::mat4(1.0f);
+					M_Rotation = glm::rotate(M_Rotation, glm::radians(1.0f), glm::vec3(0.0, 0.0, 1.0));
+					view.up = glm::vec3(M_Rotation * glm::vec4(view.up, 1.0));
+					rotation_rad++;
+				}
+			}
+			else if (mouse_end_xPos - mouse_start_xPos < 0) {
+				if (rotation_rad > -60) {
+					glm::mat4 M_Rotation = glm::mat4(1.0f);
+					M_Rotation = glm::rotate(M_Rotation, glm::radians(-1.0f), glm::vec3(0.0, 0.0, 1.0));
+					view.up = glm::vec3(M_Rotation * glm::vec4(view.up, 1.0));
+					rotation_rad--;
+				}
+			}
 
+		}
 	}
 
 	// --
@@ -484,7 +694,75 @@ public:
 
 	void updateState()
 	{
-		
+		for (int i = 5; i < 10; i++) {
+			if (ball_way[i - 5] == 0) {
+				shapes[i].translate(3, -0.05f, 0.05f, 0.f);
+				ball_x[i - 5] += -0.05;
+				ball_y[i - 5] += 0.05;
+			}
+			else if (ball_way[i - 5] == 1) {
+				shapes[i].translate(3, -0.05f, -0.05f, 0.f);
+				ball_x[i - 5] += -0.05;
+				ball_y[i - 5] += -0.05;
+			}
+			else if (ball_way[i - 5] == 2) {
+				shapes[i].translate(3, 0.05f, -0.05f, 0.f);
+				ball_x[i - 5] += 0.05;
+				ball_y[i - 5] += -0.05;
+			}
+			else if (ball_way[i - 5] == 3) {
+				shapes[i].translate(3, 0.05f, 0.05f, 0.f);
+				ball_x[i - 5] += 0.05;
+				ball_y[i - 5] += 0.05;
+			}
+		}
+		for (int i = 5; i < 10; i++) {
+			if (ball_way[i - 5] == 0 && (ball_y[i - 5] > 1.8 || ball_x[i - 5] < -1.8)) {
+				ball_way[i - 5] = 1;
+			}
+			else if (ball_way[i - 5] == 1 && ball_x[i - 5] < -1.8) {
+				ball_way[i - 5] = 2;
+			}
+			else if (ball_way[i - 5] == 2 && ball_y[i - 5] < -1.8) {
+				if (tog_o == 0) {
+					ball_way[i - 5] = 3;
+				}
+			}
+			else if (ball_way[i - 5] == 3 && ball_x[i - 5] > 1.8) {
+				ball_way[i - 5] = 0;
+			}
+		}
+		if (tog_o) {
+			open_time++;
+			if (open_time < 90) {
+				shapes[1].rotate(3, 0.0, -2.0, -2.0, 1.0f, 1.0, 0.0, 0.0);
+			}
+		}
+		for (int i = 10; i < 13; i++) {
+			if (tog_o) {
+				if (rotation_rad > 0) {
+					shapes[i].translate(2, 0.05f, -0.05f, 0.f);
+				}
+				else if (rotation_rad < 0) {
+					shapes[i].translate(2, -0.05f, -0.05f, 0.f);
+				}
+				else if (rotation_rad == 0) {
+					shapes[i].translate(2, 0.f, -0.05f, 0.f);
+				}
+			}
+			else if (rotation_rad > 0) {
+				if (box_time < 100) {
+					shapes[i].translate(2, 0.05f, 0.f, 0.f);
+					box_time++;
+				}
+			}
+			else if (rotation_rad < 0) {
+				if (box_time > -100) {
+					shapes[i].translate(2, -0.05f, 0.f, 0.f);
+					box_time--;
+				}
+			}
+		}
 	}
 
 
@@ -533,9 +811,6 @@ GLvoid cb::GameLoop(int value)
 
 	// Game State update
 	Window.updateState();
-
-	// buffer update
-	Window.updateBuffer();
 
 	// render (Display 함수 호출)
 	glutPostRedisplay();

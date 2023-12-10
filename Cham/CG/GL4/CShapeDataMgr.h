@@ -3,14 +3,22 @@
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
 
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm/glm.hpp>
+#include <glm/glm/ext.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
 
 #include <vector>
 
 #include "Struct.h"
 
+struct SShapeData
+{
+	std::vector<GLfloat> coords;
+	std::vector<GLfloat> normals;
+	std::vector<unsigned int> indices;
+
+	SShapeData();
+};
 
 class CShapeDataMgr
 {
@@ -23,7 +31,7 @@ private:
 
 public:
 	void init();
-	void initObj(const char* _obj);
+	void initObj(const char* _obj, const int _shape);
 
 	SShapeData& getData(const int _idx);
 
